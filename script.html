@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nebula Hub - Script</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+      color: #ffffff;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+      z-index: 1000;
+      padding: 1rem 0;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+    }
+
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #8a2be2;
+      text-decoration: none;
+      text-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 400;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.5rem 1rem;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #8a2be2;
+      text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #8a2be2, transparent);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #8a2be2;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-toggle:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+    }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 100%;
+      height: 100vh;
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(15px);
+      border-left: 1px solid rgba(138, 43, 226, 0.3);
+      z-index: 1001;
+      transition: right 0.3s ease;
+      padding: 2rem 0;
+    }
+
+    .mobile-menu.active {
+      right: 0;
+    }
+
+    .mobile-menu-header {
+      padding: 0 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+      padding-bottom: 1rem;
+    }
+
+    .mobile-menu-close {
+      background: none;
+      border: none;
+      color: #8a2be2;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-close:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+    }
+
+    .mobile-nav-links {
+      list-style: none;
+      padding: 0;
+    }
+
+    .mobile-nav-links li {
+      margin: 0;
+    }
+
+    .mobile-nav-links a {
+      display: block;
+      padding: 1rem 2rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 400;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(138, 43, 226, 0.1);
+    }
+
+    .mobile-nav-links a:hover,
+    .mobile-nav-links a.active {
+      background: rgba(138, 43, 226, 0.2);
+      color: #8a2be2;
+      text-shadow: 0 0 10px rgba(138, 43, 226, 0.8);
+    }
+
+    .mobile-menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .main-content {
+      margin-top: 80px;
+      min-height: calc(100vh - 80px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 2rem;
+    }
+
+    .script-section {
+      text-align: center;
+      max-width: 800px;
+      width: 100%;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #8a2be2, #4b0082, #9370db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+    }
+
+    .section-subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #b8b8b8;
+      line-height: 1.6;
+    }
+
+    .game-info,
+    .code-container,
+    .instructions {
+      background: rgba(138, 43, 226, 0.1);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      backdrop-filter: blur(5px);
+    }
+
+    .game-info h3 {
+      font-family: 'Orbitron', monospace;
+      color: #8a2be2;
+      margin-bottom: 1rem;
+    }
+
+    .code-container {
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+    }
+
+    .file-name {
+      font-family: 'Orbitron', monospace;
+      color: #8a2be2;
+      font-size: 0.9rem;
+    }
+
+    .code-box {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 5px;
+      padding: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: #00ff00;
+      text-align: left;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .line-numbers {
+      color: #666;
+      margin-right: 1rem;
+      user-select: none;
+    }
+
+    .copy-button {
+      background: linear-gradient(45deg, #8a2be2, #4b0082);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Exo 2', sans-serif;
+      box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .copy-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+    }
+
+    .copy-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .copy-button:hover::before {
+      left: 100%;
+    }
+
+    .copy-feedback {
+      margin-top: 1rem;
+      color: #00ff00;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .copy-feedback.show {
+      opacity: 1;
+    }
+
+    .instructions h4 {
+      font-family: 'Orbitron', monospace;
+      color: #8a2be2;
+      margin-bottom: 1rem;
+    }
+
+    .instructions ol {
+      color: #b8b8b8;
+      line-height: 1.8;
+      padding-left: 1.5rem;
+    }
+
+    .instructions li {
+      margin-bottom: 0.5rem;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .main-content {
+        padding: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+      }
+
+      .section-subtitle {
+        font-size: 1rem;
+      }
+
+      .code-box {
+        font-size: 0.8rem;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+
+      .copy-button {
+        width: 100%;
+      }
+
+      .game-info,
+      .code-container,
+      .instructions {
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+
+      .mobile-menu {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+    <div class="starfield" id="starfield"></div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">NEBULA HUB</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="script.html" class="active">Script</a></li>
+                <li><a href="creator.html">Creator</a></li>
+                <li><a href="discord.html">Discord</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                ☰
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <span class="logo">NEBULA HUB</span>
+            <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="script.html" class="active">📜 Script</a></li>
+            <li><a href="creator.html">🧠 Creator</a></li>
+            <li><a href="discord.html">💬 Discord</a></li>
+            <li><a href="faq.html">❓ FAQ</a></li>
+        </ul>
+    </div>
+    
+    <main class="main-content">
+        <div class="script-section">
+            <h1 class="section-title">📜 Latest Nebula Hub Script</h1>
+            <p class="section-subtitle">
+                Here's the latest Nebula Hub script for Muscle Legends. Copy and paste it into your Roblox executor:
+            </p>
+            
+            <div class="game-info">
+                <h3>💪 Currently Supporting: Muscle Legends</h3>
+                <p>Auto-farm, strength boosts, speed enhancements, and much more!</p>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="file-name">Nebula Hub Muscle Legends</span>
+                </div>
+                <div class="code-box" id="scriptCode">
+<span class="line-numbers">1</span>loadstring(game:HttpGet("https://raw.githubusercontent.com/yourusername/nebulahub/main/muscle-legends.lua"))()
+                </div>
+                <button class="copy-button" onclick="copyScript()">
+                    <span id="buttonText">📋 Copy Script</span>
+                </button>
+                <div class="copy-feedback" id="copyFeedback">Script copied to clipboard! 🚀</div>
+            </div>
+            
+            <div class="instructions">
+                <h4>🚀 How to Use:</h4>
+                <ol>
+                    <li>Open your favorite Roblox executor (Synapse X, KRNL, etc.)</li>
+                    <li>Copy the script above using the copy button</li>
+                    <li>Paste the script into your executor</li>
+                    <li>Join Muscle Legends on Roblox</li>
+                    <li>Execute the script and enjoy!</li>
+                </ol>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Create starfield animation
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const numberOfStars = 100;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random position
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                // Random animation delay
+                star.style.animationDelay = Math.random() * 3 + 's';
+                
+                starfield.appendChild(star);
+            }
+        }
+        
+        // Copy script function
+        function copyScript() {
+            const scriptCode = document.getElementById('scriptCode').textContent.trim();
+            const feedback = document.getElementById('copyFeedback');
+            const buttonText = document.getElementById('buttonText');
+            
+            navigator.clipboard.writeText(scriptCode).then(() => {
+                feedback.classList.add('show');
+                buttonText.textContent = '✅ Copied!';
+                
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                    buttonText.textContent = '📋 Copy Script';
+                }, 2000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = scriptCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                feedback.classList.add('show');
+                buttonText.textContent = '✅ Copied!';
+                
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                    buttonText.textContent = '📋 Copy Script';
+                }, 2000);
+            });
+        }
+        
+        // Mobile menu functions
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            
+            mobileMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Initialize starfield when page loads
+        document.addEventListener('DOMContentLoaded', createStarfield);
+    </script>
+
+</body>
+</html>
