@@ -548,6 +548,199 @@ Tabs.Rebirth:CreateParagraph("Aligned Paragraph", {
     ContentAlignment = Enum.TextXAlignment.Center
 })
 
+Tabs.Teleport:CreateButton{
+    Title = "Teleport to City",
+    Description = "",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+
+       
+        local x, y, z = -607.5, 4.1, 416.6
+
+        hrp.CFrame = CFrame.new(x, y, z)
+    end
+}
+
+Tabs.Teleport:CreateButton{
+    Title = "Teleport to Snow City",
+    Description = "",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+
+       
+        local x, y, z = -561.1, 4.1, 2446.6
+
+        hrp.CFrame = CFrame.new(x, y, z)
+    end
+}
+
+Tabs.Teleport:CreateButton{
+    Title = "Teleport to Magma City",
+    Description = "",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+
+       
+        local x, y, z = 1616.8, 4.2, 4330.6
+
+        hrp.CFrame = CFrame.new(x, y, z)
+    end
+}
+
+Tabs.Misc:CreateButton({
+    Title = "Permanent Shift Lock",
+    Callback = function()
+        loadstring(game:HttpGet('https://pastebin.com/raw/CjNsnSDy'))()
+    end
+})
+
+local Toggle = Tabs.Misc:CreateToggle("LockPosition", {
+    Title = "Lock Position",
+    Default = false
+})
+
+Toggle:OnChanged(function(Value)
+    if Value then
+        local currentPos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        getgenv().posLock = game:GetService("RunService").Heartbeat:Connect(function()
+            local char = game.Players.LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                char.HumanoidRootPart.CFrame = currentPos
+            end
+        end)
+    else
+        if getgenv().posLock then
+            getgenv().posLock:Disconnect()
+            getgenv().posLock = nil
+        end
+    end
+end)
+
+-- Disable Trade Toggle
+Tabs.Misc:CreateToggle("DisableTrade", {Title = "Disable Trade", Default = false}):OnChanged(function(state)
+    local tradeEvent = game:GetService("ReplicatedStorage").rEvents.tradingEvent
+    if state then
+        tradeEvent:FireServer("disableTrading")
+    else
+        tradeEvent:FireServer("enableTrading")
+    end
+end)
+
+-- Hide Pets Toggle
+Tabs.Misc:CreateToggle("HidePets", {Title = "Hide Pets", Default = false}):OnChanged(function(state)
+    local petEvent = game:GetService("ReplicatedStorage").rEvents.showPetsEvent
+    if state then
+        petEvent:FireServer("hidePets")
+    else
+        petEvent:FireServer("showPets")
+    end
+end)
+
+Tabs.Misc:CreateSection("Game Enhancers")
+
+-- Anti AFK Button
+Tabs.Misc:CreateButton({
+    Title = "Anti AFK",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Moha-space/SPACE-HUB-/refs/heads/main/MAIN%20AINTI%20AFK%20.txt"))()
+    end
+})
+
+Tabs.Misc:CreateButton{
+    Title = "Instant FPS Boost",
+    Description = "Clears effects and boosts performance immediately.",
+    Callback = function()
+        -- Disable laggy visual effects
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") then
+                obj.Enabled = false
+            elseif obj:IsA("Explosion") then
+                obj:Destroy()
+            end
+        end
+
+        -- Remove decals/textures
+        for _, v in pairs(game:GetDescendants()) do
+            if v:IsA("Decal") or v:IsA("Texture") then
+                v:Destroy()
+            end
+        end
+
+        -- Lower graphics quality
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+        -- Turn off terrain decorations if available
+        if workspace:FindFirstChildOfClass("Terrain") then
+            workspace.Terrain.Decorations = false
+        end
+
+        -- Force garbage collection
+        collectgarbage("collect")
+
+        print("[Nebula Hub] Performance Boost Applied ✔️")
+    end
+}
+
+Tabs.Misc:CreateButton{
+    Title = "No Lag",
+    Description = "Instantly removes lag by cleaning visuals, effects, and more.",
+    Callback = function()
+        -- Disable visual effects
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Smoke") or obj:IsA("Fire") or obj:IsA("Sparkles") then
+                obj.Enabled = false
+            elseif obj:IsA("Explosion") then
+                obj:Destroy()
+            elseif obj:IsA("Decal") or obj:IsA("Texture") then
+                obj:Destroy()
+            elseif obj:IsA("Lighting") then
+                obj:Destroy()
+            end
+        end
+
+        -- Lower graphics quality
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+
+        -- Disable terrain decoration
+        if workspace:FindFirstChildOfClass("Terrain") then
+            workspace.Terrain.Decorations = false
+        end
+
+        -- Remove sounds
+        for _, s in pairs(workspace:GetDescendants()) do
+            if s:IsA("Sound") then
+                s:Destroy()
+            end
+        end
+
+        -- Remove accessories and clothing
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        for _, item in pairs(character:GetDescendants()) do
+            if item:IsA("Accessory") or item:IsA("Clothing") or item:IsA("ShirtGraphic") then
+                item:Destroy()
+            end
+        end
+
+        -- Disable global shadows and blur
+        local lighting = game:GetService("Lighting")
+        lighting.GlobalShadows = false
+        lighting.FogEnd = 100000
+        lighting.Blur = nil
+
+        -- Garbage collect memory
+        collectgarbage("collect")
+
+        print("[Nebula Hub] 🧹 No Lag Mode Activated")
+    end
+}
+
 local creditsParagraph = Tabs.Credits:CreateParagraph("Paragraph", {
     Title = "Special Thanks to ttvkaiser",
     Content = "Massive appreciation to ttvkaiser, the emperor, mastermind, and original creator behind this powerful and feature-rich script. Without his dedication, creativity, and relentless work, none of this would have been possible. Every line of code reflects his vision for excellence."
